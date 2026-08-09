@@ -1,28 +1,275 @@
-<script>
-  const cards = document.querySelectorAll('.playlist-card');
-  const player = document.getElementById('player');
-  const placeholder = document.getElementById('placeholder');
-  const currentTitle = document.getElementById('current-title');
-  const openLink = document.getElementById('open-on-youtube');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playlist Viewer (Unofficial)</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --card-hover: #252525;
+      --text: #f1f1f1;
+      --muted: #aaa;
+      --accent: #ff0000;
+      --border: #333;
+    }
 
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      // Update active state
-      cards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      const id = card.dataset.id;
-      const title = card.dataset.title;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
 
-      // Update UI
-      currentTitle.textContent = title;
-      openLink.href = `https://www.youtube.com/playlist?list=${id}`;
-      openLink.style.display = 'inline';
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
 
-      // Load embed
-      placeholder.style.display = 'none';
-      player.style.display = 'block';
-      player.src = `https://www.youtube.com/embed/videoseries?list=${id}`;
+    .disclaimer {
+      background: #1f1515;
+      border: 1px solid #5c1a1a;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+      color: #e0c0c0;
+    }
+
+    .disclaimer strong {
+      color: #ff6b6b;
+    }
+
+    .disclaimer a {
+      color: #ff8a8a;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .playlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .playlist-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .playlist-card:hover {
+      background: var(--card-hover);
+      border-color: #555;
+    }
+
+    .playlist-card.active {
+      border-color: var(--accent);
+      background: #1f1212;
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .playlist-card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .playlist-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .playlist-card .badge {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      background: #333;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      color: #ccc;
+    }
+
+    .player-section {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .player-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .player-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .player-header a {
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+
+    .player-header a:hover {
+      color: var(--text);
+      text-decoration: underline;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 1rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-bottom: 2rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="disclaimer">
+      <strong>⚠️ Unofficial project</strong> — This site is <strong>not</strong> affiliated with, endorsed by, or connected to YouTube or Google in any way.
+      It only embeds publicly available playlists using YouTube’s standard embed player.
+      All content is owned by the original creators and served directly by YouTube.
+      By using this page you agree to <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube’s Terms of Service</a>.
+    </div>
+
+    <header>
+      <h1>Playlist Viewer</h1>
+      <p>Select a playlist below to start watching</p>
+    </header>
+
+    <div class="playlist-grid">
+      <button class="playlist-card" data-id="PL3tRBEVW0hiBSFOFhTC5wt75P2BES0rAo" data-title="Scary Games! (Markiplier)">
+        <h2>Scary Games!</h2>
+        <p>Markiplier’s long-running horror game series</p>
+        <span class="badge">622+ videos</span>
+      </button>
+
+      <button class="playlist-card" data-id="PL5SfwcMShbfUGfBa54E3ERNWucMetWtoP" data-title="3 Random Games">
+        <h2>3 Random Games</h2>
+        <p>Random game playthroughs</p>
+        <span class="badge">Playlist</span>
+      </button>
+
+      <button class="playlist-card" data-id="PLMBYlcH3smRwGDUimxWppWRSbxzMRkW7F" data-title="Scary Games">
+        <h2>Scary Games</h2>
+        <p>Another collection of scary games</p>
+        <span class="badge">Playlist</span>
+      </button>
+    </div>
+
+    <div class="player-section">
+      <div class="player-header">
+        <h3 id="current-title">No playlist selected</h3>
+        <a id="open-on-youtube" href="#" target="_blank" rel="noopener" style="display:none;">Open on YouTube ↗</a>
+      </div>
+      <div class="video-wrapper">
+        <div class="placeholder" id="placeholder">
+          Choose a playlist above to load the player
+        </div>
+        <iframe
+          id="player"
+          style="display:none;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+    <footer>
+      Unofficial fan page • Content belongs to the original creators and YouTube
+    </footer>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.playlist-card');
+    const player = document.getElementById('player');
+    const placeholder = document.getElementById('placeholder');
+    const currentTitle = document.getElementById('current-title');
+    const openLink = document.getElementById('open-on-youtube');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        const id = card.dataset.id;
+        const title = card.dataset.title;
+
+        currentTitle.textContent = title;
+        openLink.href = `https://www.youtube.com/playlist?list=${id}`;
+        openLink.style.display = 'inline';
+
+        placeholder.style.display = 'none';
+        player.style.display = 'block';
+        player.src = `https://www.youtube.com/embed/videoseries?list=${id}`;
+      });
     });
-  });
-</script>
+  </script>
+</body>
+</html>
