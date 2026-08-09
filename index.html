@@ -7,31 +7,29 @@
   <style>
     :root {
       --yt-bg: #0f0f0f;
+      --yt-sidebar: #0f0f0f;
       --yt-elevated: #212121;
-      --yt-hover: #3f3f3f;
+      --yt-hover: #272727;
       --yt-text: #f1f1f1;
       --yt-muted: #aaaaaa;
       --yt-red: #ff0000;
       --yt-border: #303030;
+      --yt-chip: #272727;
+      --yt-chip-active: #f1f1f1;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Roboto", "Arial", sans-serif;
       background: var(--yt-bg);
       color: var(--yt-text);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
       height: 56px;
       background: var(--yt-bg);
       border-bottom: 1px solid var(--yt-border);
@@ -39,7 +37,21 @@
       align-items: center;
       padding: 0 16px;
       gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--yt-text);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+    }
+    .menu-btn:hover { background: var(--yt-hover); }
 
     .logo {
       display: flex;
@@ -48,14 +60,13 @@
       text-decoration: none;
       color: var(--yt-text);
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 20px;
       letter-spacing: -0.5px;
-      flex-shrink: 0;
     }
 
     .logo-icon {
-      width: 32px;
-      height: 22px;
+      width: 30px;
+      height: 20px;
       background: var(--yt-red);
       border-radius: 6px;
       display: flex;
@@ -63,22 +74,26 @@
       justify-content: center;
       position: relative;
     }
-
     .logo-icon::after {
       content: "";
-      width: 0;
-      height: 0;
-      border-left: 9px solid white;
-      border-top: 6px solid transparent;
-      border-bottom: 6px solid transparent;
+      width: 0; height: 0;
+      border-left: 8px solid white;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
       margin-left: 2px;
     }
 
-    .logo span {
-      font-family: "Arial Black", "Arial", sans-serif;
+    .logo .badge {
+      font-size: 10px;
+      background: #333;
+      color: #aaa;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 6px;
+      font-weight: 500;
     }
 
-    .search-box {
+    .search-container {
       flex: 1;
       max-width: 640px;
       margin: 0 auto;
@@ -86,7 +101,7 @@
       height: 40px;
     }
 
-    .search-box input {
+    .search-container input {
       flex: 1;
       background: #121212;
       border: 1px solid #303030;
@@ -97,85 +112,182 @@
       font-size: 16px;
       outline: none;
     }
+    .search-container input:focus { border-color: #1c62b9; }
 
-    .search-box input:focus {
-      border-color: #1c62b9;
-    }
-
-    .search-box button {
+    .search-container button {
       width: 64px;
-      background: #222;
+      background: #222222;
       border: 1px solid #303030;
       border-radius: 0 40px 40px 0;
       color: var(--yt-muted);
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 18px;
     }
+    .search-container button:hover { background: #303030; color: #fff; }
 
-    .search-box button:hover {
-      background: #303030;
-      color: var(--yt-text);
-    }
-
-    .disclaimer {
-      background: #1a0a0a;
-      border-bottom: 1px solid #5c1a1a;
-      padding: 10px 16px;
-      font-size: 13px;
-      color: #e0b0b0;
-      text-align: center;
-    }
-
-    .disclaimer strong {
-      color: #ff6b6b;
-    }
-
-    .disclaimer a {
-      color: #ff8a8a;
-    }
-
-    .main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 16px 48px;
-    }
-
-    .section-title {
-      font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 16px;
+    .top-actions {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .section-title::before {
-      content: "▶";
-      color: var(--yt-red);
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--yt-text);
+      font-size: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover { background: var(--yt-hover); }
+
+    .create-btn {
+      background: var(--yt-elevated);
+      border: none;
+      color: var(--yt-text);
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 18px;
       font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .create-btn:hover { background: var(--yt-hover); }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
-    .playlist-grid {
+    .layout {
+      display: flex;
+      flex: 1;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: var(--yt-sidebar);
+      padding: 12px 12px 24px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--yt-border);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      color: var(--yt-text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: var(--yt-hover); }
+    .nav-item.active {
+      background: var(--yt-hover);
+      font-weight: 500;
+    }
+    .nav-item .icon { font-size: 20px; width: 24px; text-align: center; }
+
+    .nav-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--yt-border);
+    }
+    .nav-section-title {
+      font-size: 16px;
+      font-weight: 500;
+      padding: 6px 12px;
+      margin-bottom: 4px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px 24px 40px;
+      overflow-y: auto;
+    }
+
+    .chips {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .chip {
+      background: var(--yt-chip);
+      color: var(--yt-text);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip:hover { background: #3f3f3f; }
+    .chip.active {
+      background: var(--yt-chip-active);
+      color: #0f0f0f;
+    }
+
+    .disclaimer {
+      background: #1a0a0a;
+      border: 1px solid #5c1a1a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #e0b0b0;
+      line-height: 1.4;
+    }
+    .disclaimer strong { color: #ff6b6b; }
+    .disclaimer a { color: #ff8a8a; }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px 16px;
       margin-bottom: 32px;
     }
 
-    .playlist-card {
+    .video-card {
+      cursor: pointer;
       background: transparent;
       border: none;
-      cursor: pointer;
       text-align: left;
       color: inherit;
-      transition: transform 0.15s ease;
+      transition: transform 0.15s;
     }
-
-    .playlist-card:hover {
-      transform: scale(1.02);
-    }
-
-    .playlist-card.active .thumb {
+    .video-card:hover { transform: scale(1.02); }
+    .video-card.active .thumb {
       outline: 2px solid var(--yt-red);
       outline-offset: 2px;
     }
@@ -187,45 +299,53 @@
       border-radius: 12px;
       position: relative;
       overflow: hidden;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
     }
-
-    .thumb-icon {
-      font-size: 42px;
-      opacity: 0.7;
-    }
-
-    .thumb .count {
+    .thumb-icon { font-size: 48px; opacity: 0.75; }
+    .duration {
       position: absolute;
       bottom: 8px;
       right: 8px;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.8);
       color: white;
       font-size: 12px;
+      font-weight: 500;
       padding: 3px 6px;
       border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
+    .card-meta {
+      display: flex;
+      gap: 12px;
+    }
+    .channel-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #444;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
     .card-info h3 {
       font-size: 14px;
       font-weight: 500;
-      line-height: 1.3;
+      line-height: 1.4;
       margin-bottom: 4px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
     .card-info p {
       font-size: 12px;
       color: var(--yt-muted);
+      line-height: 1.4;
     }
 
     .player-section {
@@ -234,9 +354,8 @@
       overflow: hidden;
       margin-top: 8px;
     }
-
     .player-header {
-      padding: 12px 16px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--yt-border);
       display: flex;
       justify-content: space-between;
@@ -244,21 +363,16 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-
     .player-header h2 {
       font-size: 16px;
       font-weight: 500;
     }
-
     .player-header a {
       color: var(--yt-muted);
       font-size: 13px;
       text-decoration: none;
     }
-
-    .player-header a:hover {
-      color: var(--yt-text);
-    }
+    .player-header a:hover { color: var(--yt-text); }
 
     .video-wrapper {
       position: relative;
@@ -266,16 +380,12 @@
       padding-bottom: 56.25%;
       background: #000;
     }
-
     .video-wrapper iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border: 0;
     }
-
     .placeholder {
       position: absolute;
       inset: 0;
@@ -284,24 +394,21 @@
       align-items: center;
       justify-content: center;
       color: var(--yt-muted);
-      gap: 12px;
+      gap: 14px;
       font-size: 15px;
     }
-
-    .placeholder .big-play {
+    .big-play {
       width: 68px;
       height: 48px;
       background: var(--yt-red);
-      border-radius: 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    .placeholder .big-play::after {
+    .big-play::after {
       content: "";
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-left: 18px solid white;
       border-top: 11px solid transparent;
       border-bottom: 11px solid transparent;
@@ -310,112 +417,148 @@
 
     footer {
       text-align: center;
-      padding: 32px 16px;
+      padding: 24px;
       font-size: 12px;
       color: #666;
       border-top: 1px solid var(--yt-border);
-      margin-top: 40px;
     }
 
-    .joke-badge {
-      display: inline-block;
-      background: #333;
-      color: #aaa;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 3px;
-      margin-left: 6px;
-      vertical-align: middle;
-      font-weight: 400;
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .content { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
   <header class="topbar">
+    <button class="menu-btn">☰</button>
     <a href="#" class="logo">
       <div class="logo-icon"></div>
-      <span>School<span style="color:var(--yt-text)">Tube</span></span>
-      <span class="joke-badge">UNOFFICIAL</span>
+      <span>SchoolTube</span>
+      <span class="badge">UNOFFICIAL</span>
     </a>
 
-    <div class="search-box">
-      <input type="text" placeholder="Search (this does nothing lol)" disabled />
+    <div class="search-container">
+      <input type="text" placeholder="Search" disabled />
       <button>🔍</button>
+    </div>
+
+    <div class="top-actions">
+      <button class="create-btn">＋ Create</button>
+      <button class="icon-btn">🔔</button>
+      <div class="avatar">S</div>
     </div>
   </header>
 
-  <div class="disclaimer">
-    <strong>⚠️ Not real YouTube</strong> — This is an unofficial fan page. Not affiliated with YouTube or Google.
-    All videos are embedded from YouTube and belong to their creators.
-    <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms</a>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="nav-item active">
+        <span class="icon">🏠</span> Home
+      </a>
+      <a class="nav-item">
+        <span class="icon">▶️</span> Subscriptions
+      </a>
+
+      <div class="nav-section">
+        <div class="nav-section-title">You</div>
+        <a class="nav-item"><span class="icon">👤</span> Your channel</a>
+        <a class="nav-item"><span class="icon">🕒</span> History</a>
+        <a class="nav-item"><span class="icon">📋</span> Playlists</a>
+        <a class="nav-item"><span class="icon">⏰</span> Watch later</a>
+        <a class="nav-item"><span class="icon">👍</span> Liked videos</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="chips">
+        <button class="chip active">All</button>
+        <button class="chip">Gaming</button>
+        <button class="chip">Horror</button>
+        <button class="chip">Markiplier</button>
+        <button class="chip">Playlists</button>
+      </div>
+
+      <div class="disclaimer">
+        <strong>⚠️ Not real YouTube</strong> — This is an unofficial fan page. Not affiliated with YouTube or Google in any way.
+        All videos are embedded from YouTube and belong to their original creators.
+        <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms of Service</a>
+      </div>
+
+      <h2 class="section-title">Selected Playlists</h2>
+
+      <div class="video-grid">
+        <button class="video-card" data-id="PL3tRBEVW0hiBSFOFhTC5wt75P2BES0rAo" data-title="Scary Games! (Markiplier)">
+          <div class="thumb">
+            <div class="thumb-icon">👻</div>
+            <div class="duration">622 videos</div>
+          </div>
+          <div class="card-meta">
+            <div class="channel-avatar">M</div>
+            <div class="card-info">
+              <h3>Scary Games!</h3>
+              <p>Markiplier<br>Horror game series • Playlist</p>
+            </div>
+          </div>
+        </button>
+
+        <button class="video-card" data-id="PL5SfwcMShbfUGfBa54E3ERNWucMetWtoP" data-title="3 Random Games">
+          <div class="thumb">
+            <div class="thumb-icon">🎲</div>
+            <div class="duration">Playlist</div>
+          </div>
+          <div class="card-meta">
+            <div class="channel-avatar">3</div>
+            <div class="card-info">
+              <h3>3 Random Games</h3>
+              <p>CaptainSauce<br>Playlist</p>
+            </div>
+          </div>
+        </button>
+
+        <button class="video-card" data-id="PLMBYlcH3smRwGDUimxWppWRSbxzMRkW7F" data-title="Scary Games">
+          <div class="thumb">
+            <div class="thumb-icon">🎃</div>
+            <div class="duration">Playlist</div>
+          </div>
+          <div class="card-meta">
+            <div class="channel-avatar">S</div>
+            <div class="card-info">
+              <h3>Scary Games</h3>
+              <p>Jacksepticeye<br>Playlist</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="player-section">
+        <div class="player-header">
+          <h2 id="current-title">Select a playlist to start watching</h2>
+          <a id="open-on-youtube" href="#" target="_blank" rel="noopener" style="display:none;">Open on real YouTube ↗</a>
+        </div>
+        <div class="video-wrapper">
+          <div class="placeholder" id="placeholder">
+            <div class="big-play"></div>
+            <div>Click a playlist above to load the player</div>
+          </div>
+          <iframe
+            id="player"
+            style="display:none;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <main class="main">
-    <h2 class="section-title">Selected Playlists</h2>
-
-    <div class="playlist-grid">
-      <button class="playlist-card" data-id="PL3tRBEVW0hiBSFOFhTC5wt75P2BES0rAo" data-title="Scary Games! (Markiplier)">
-        <div class="thumb">
-          <div class="thumb-icon">👻</div>
-          <div class="count">▶ Playlist</div>
-        </div>
-        <div class="card-info">
-          <h3>Scary Games!</h3>
-          <p>Markiplier • Scary Games!</p>
-        </div>
-      </button>
-
-      <button class="playlist-card" data-id="PL5SfwcMShbfUGfBa54E3ERNWucMetWtoP" data-title="3 Random Games">
-        <div class="thumb">
-          <div class="thumb-icon">🎲</div>
-          <div class="count">▶ Playlist</div>
-        </div>
-        <div class="card-info">
-          <h3>3 Random Games</h3>
-          <p>CaptainSauce • 3 Random Games</p>
-        </div>
-      </button>
-
-      <button class="playlist-card" data-id="PLMBYlcH3smRwGDUimxWppWRSbxzMRkW7F" data-title="Scary Games">
-        <div class="thumb">
-          <div class="thumb-icon">🎃</div>
-          <div class="count">▶ Playlist</div>
-        </div>
-        <div class="card-info">
-          <h3>Scary Games</h3>
-          <p>Jacksepticeye • Scary Games</p>
-        </div>
-      </button>
-    </div>
-
-    <div class="player-section">
-      <div class="player-header">
-        <h2 id="current-title">Select a playlist to start</h2>
-        <a id="open-on-youtube" href="#" target="_blank" rel="noopener" style="display:none;">Open on real YouTube ↗</a>
-      </div>
-      <div class="video-wrapper">
-        <div class="placeholder" id="placeholder">
-          <div class="big-play"></div>
-          <div>Click a playlist above</div>
-        </div>
-        <iframe
-          id="player"
-          style="display:none;"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          loading="lazy">
-        </iframe>
-      </div>
-    </div>
-  </main>
-
   <footer>
-    SchoolTube is a joke • Not affiliated with YouTube in any way • Content belongs to the original creators
+    SchoolTube is a joke • Not affiliated with YouTube or Google • Content belongs to the original creators
   </footer>
 
   <script>
-    const cards = document.querySelectorAll('.playlist-card');
+    const cards = document.querySelectorAll('.video-card');
     const player = document.getElementById('player');
     const placeholder = document.getElementById('placeholder');
     const currentTitle = document.getElementById('current-title');
